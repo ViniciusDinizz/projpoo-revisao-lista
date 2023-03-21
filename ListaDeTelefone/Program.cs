@@ -9,16 +9,27 @@ internal class Program
         List<Contato> phonebook = new List<Contato>();
         int op = 0;
 
-        do {
+        do
+        {
             Console.Clear();
             op = menu();
             switch (op)
             {
                 case 1:
                     phonebook.Add(CreateContact());
+                    List<Contato> phonebookorde = phonebook.OrderBy(Contato => Contato.Name).ToList();
+                    phonebook = phonebookorde;
                     break;
                 case 2:
-                    phonebook = new List<Contato>();
+                    int contato = ProcurarContato();
+                    while(contato == -1)
+                    {
+                        contato = ProcurarContato();
+                    }
+                    int campEdit = Verificacao();
+                    phonebook[contato].EditContact(campEdit);
+                    phonebookorde = phonebook.OrderBy(Contato => Contato.Name).ToList();
+                    phonebook = phonebookorde;
                     break;
                 case 3:
                     phonebook.Remove(DeleteContact());
@@ -47,9 +58,27 @@ internal class Program
 
         int menu()
         {
-            Console.Write("Menu de opcções\n1- Inserer Contato\n2- Editar contato\n3- Remover contato\n4- Mostrar contatos: \n5- Sair\nEscolha sua poção: ");
-            return int.Parse(Console.ReadLine());
+            bool option;
+            int op = 0;
+            do
+            {
+                Console.Write("Menu de opcções\n1- Inserir Contato\n2- Editar contato\n3- Remover contato\n4- Mostrar contatos: \n5- Sair\nEscolha sua poção: ");
+                try
+                {
+                    op = int.Parse(Console.ReadLine());
+                    option = false;
+                }
+                catch (Exception ex)
+                {
+                    Console.Write("Digite um número inteiro entre 1 e 5...");
+                    Console.ReadKey();
+                    option == true;
+                }
+            } while (option == true);
+            return op;
         }
+
+        
 
         Contato DeleteContact()
         {
@@ -73,6 +102,45 @@ internal class Program
             string t = Console.ReadLine();
             Contato contact = new(n, t);
             return contact;
+        }
+
+        int ProcurarContato()
+        {
+            Console.Write("Digite o nome do contato: ");
+            string cont = Console.ReadLine();
+            for(int i = 0; i < phonebook.Count; i++)
+            {
+                if (phonebook[i].Name.ToUpper() == cont.ToUpper())
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        int Verificacao()
+        {
+            int value = 0;
+            bool correct;
+            do
+            {
+                try
+                {
+                    Console.Clear();
+                    Console.Write("Escolha o campo a ser editado:\n1- Nome\n2- Telefone\n3- Email\n4- Street\n5- City\n6- State\n" +
+                "7- Postal Code\n8- Country\n0- SAIR\nOption: ");
+                    value = int.Parse(Console.ReadLine());
+                    correct = false;
+                }
+                catch (Exception val)
+                {
+                    Console.Write("Valor não aceito. Tente novamente...");
+                    Console.ReadKey();
+                    correct = true;
+                }
+            } while (correct == true);
+            Console.Clear();
+            return value;
         }
 
     }
